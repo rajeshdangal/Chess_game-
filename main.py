@@ -1,18 +1,31 @@
 import pygame
-from tiles import draw_tile
+from board import Board
+from menu import Menu
+from viewport import ViewPort
+
 pygame.init()
 
+screen = pygame.display.set_mode((1200, 980))
+pygame.display.set_caption("Chess Viewport")
 
-screen = pygame.display.set_mode((1200,980))
-pygame.display.set_caption("chess viewport try")
+board = Board()
+menu = Menu()
+viewport = ViewPort(board, menu)
 
+game_state = "menu"
 running = True
-screen.fill((255,255,255))
-draw_tile(screen)
-pygame.display.update()
+
 while running:
     for event in pygame.event.get():
-        if event.type ==pygame.QUIT:
+        if event.type == pygame.QUIT:
             running = False
-pygame.quit()
 
+        if game_state == "menu":
+            result = menu.handle_input(event)
+            if result == "start":
+                game_state = "game"
+
+    viewport.draw(screen, game_state)
+    pygame.display.update()
+
+pygame.quit()

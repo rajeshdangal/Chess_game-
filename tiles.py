@@ -1,6 +1,12 @@
 import pygame
 
-def draw_tile(screen):
-    color =(0,0,0)
-    rect =(100,100,50,50)
-    pygame.draw.rect(screen, color, rect)
+class Tile:
+    def __init__(self, x, y, size, color):
+        self.rect = pygame.Rect(x, y, size, size)
+        self.color = color
+        self.piece = None
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
+        if self.piece :
+            self.piece.draw(screen)
