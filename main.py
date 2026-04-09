@@ -1,31 +1,18 @@
 import pygame
-from board import Board
-from menu import Menu
-from viewport import ViewPort
+from game_manager import GameManager
 
 pygame.init()
 
 screen = pygame.display.set_mode((1200, 980))
 pygame.display.set_caption("Chess Viewport")
 
-board = Board()
-menu = Menu()
-viewport = ViewPort(board, menu)
+game = GameManager()
 
-game_state = "menu"
-running = True
-
-while running:
+while game.running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        game.handle_events(event)
 
-        if game_state == "menu":
-            result = menu.handle_input(event)
-            if result == "start":
-                game_state = "game"
-
-    viewport.draw(screen, game_state)
+    game.draw(screen)
     pygame.display.update()
 
 pygame.quit()
