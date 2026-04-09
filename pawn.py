@@ -9,16 +9,17 @@ class Pawn(Piece):
         moves = []
 
         direction = -1 if self.color == "white" else 1
-
-        # forward 1
-        if board.is_empty(self.row + direction, self.col):
-            moves.append((self.row + direction, self.col))
-
-        # forward 2 (first move)
+ # forward 2 (first move)
         if not self.has_moved:
             if board.is_empty(self.row + 2 * direction, self.col):
                 moves.append((self.row + 2 * direction, self.col))
 
+        # forward 1
+
+        if board.is_empty(self.row + direction, self.col):
+            moves.append((self.row + direction, self.col))
+
+       
         # capture diagonally
         for dc in [-1, 1]:
             new_row = self.row + direction

@@ -12,7 +12,7 @@ class Board:
         offset_x = 100
         offset_y = 100
 
-        # 🔹 Create tiles
+        # Create tiles
         for row in range(8):
             self.tiles.append([])
             for col in range(8):
@@ -27,20 +27,31 @@ class Board:
 
                 self.tiles[row].append(tile)
 
-        # 🔹 Place black pawns
+        # Black pawns
         for col in range(8):
             pawn = Pawn(1, col, "black")
             self.tiles[1][col].piece = pawn
 
-        # 🔹 Place white pawns
+        # White pawns
         for col in range(8):
             pawn = Pawn(6, col, "white")
             self.tiles[6][col].piece = pawn
 
-    def draw(self, screen):
-        for row in self.tiles:
-            for tile in row:
+    # ✅ THIS MUST BE INSIDE THE CLASS
+    def draw(self, screen, selected_piece=None, valid_moves=None):
+        for row in range(8):
+            for col in range(8):
+                tile = self.tiles[row][col]
+
                 tile.draw(screen)
+
+                # Highlight selected piece
+                if selected_piece and (row, col) == (selected_piece.row, selected_piece.col):
+                    pygame.draw.rect(screen, (0, 255, 0), tile.rect, 3)
+
+                # Highlight valid moves
+                if valid_moves and (row, col) in valid_moves:
+                    pygame.draw.rect(screen, (0, 0, 255), tile.rect, 3)
 
     def is_empty(self, row, col):
         if 0 <= row < 8 and 0 <= col < 8:

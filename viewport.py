@@ -5,32 +5,29 @@ class ViewPort:
         self.board = board
         self.menu = menu
 
-    def draw(self, screen, state):
+    def draw(self, screen, state, selected_piece, valid_moves):
         if state == "menu":
             self.menu.draw(screen)
 
         elif state == "game":
             screen.fill((255, 255, 255))
-            self.board.draw(screen)
+
+            # Draw board + pieces + highlights
+            self.board.draw(screen, selected_piece, valid_moves)
 
         elif state == "pause":
-            # draw game in background
-            screen.fill((255, 255, 255))
-            self.board.draw(screen)
+            screen.fill((50, 50, 50))
 
-            # dark overlay
-            overlay = pygame.Surface((1200, 980))
-            overlay.set_alpha(150)
-            overlay.fill((0, 0, 0))
-            screen.blit(overlay, (0, 0))
-
-            # text
             font = pygame.font.SysFont(None, 60)
+            text = font.render("PAUSED", True, (255, 255, 255))
+            screen.blit(text, (500, 400))
 
-            text1 = font.render("PAUSED", True, (255, 255, 255))
-            text2 = font.render("R = Resume", True, (255, 255, 255))
-            text3 = font.render("M = Menu", True, (255, 255, 255))
+            small_font = pygame.font.SysFont(None, 40)
 
-            screen.blit(text1, (500, 300))
-            screen.blit(text2, (450, 400))
-            screen.blit(text3, (450, 470))
+            resume = small_font.render("Press R to Resume", True, (255, 255, 255))
+            menu = small_font.render("Press M for Menu", True, (255, 255, 255))
+            quit_text = small_font.render("Press ESC to Quit", True, (255, 255, 255))
+
+            screen.blit(resume, (450, 500))
+            screen.blit(menu, (450, 550))
+            screen.blit(quit_text, (450, 600))
