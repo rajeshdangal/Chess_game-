@@ -16,3 +16,11 @@ For local Multiplayer we will be using Python socket library which is (built in)
 Feasibility Study of the Project
 
 The project seems to be feasible as we are opting for Fully playable Chess game with save and load features and also Local Multiplayer and are not including animations Ai engine online matchmaking which will consume lots of time
+
+
+
+
+
+
+
+mergecheck
