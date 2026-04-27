@@ -8,5 +8,6 @@ class Tile:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
-        if self.piece :
-            self.piece.draw(screen)
+
+        if self.piece:
+            self.piece.draw(screen, self.rect.x, self.rect.y)

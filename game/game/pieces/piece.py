@@ -6,12 +6,9 @@ class Piece:
         self.col = col
         self.color = color
 
-    def draw(self, screen):
-        color = (25, 55, 55) if self.color == "white" else (0, 0, 0)
+    def draw(self, screen, x, y):
+        color = (255, 0, 0) if self.color == "white" else (0, 0, 255)
+        pygame.draw.circle(screen, color, (x + 40, y + 40), 20)
 
-        pygame.draw.circle(
-            screen,
-            color,
-            (self.col * 80 + 140, self.row * 80 + 140),
-            20
-        )
+    def get_valid_moves(self, board):
+        return []

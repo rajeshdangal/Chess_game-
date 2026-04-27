@@ -1,5 +1,5 @@
 import pygame
-from game.scenes.game_scene import GameScene
+import math
 
 
 class Button:
@@ -8,25 +8,28 @@ class Button:
         self.rect = pygame.Rect(x, y, w, h)
         self.action = action
 
+        # Colors
         self.base_color = (40, 40, 90)
         self.hover_color = (90, 90, 180)
         self.border_color = (255, 215, 0)
         self.text_color = (255, 255, 255)
 
+        # Animation
+        self.hovered = False
+
     def draw(self, screen, font):
         mouse = pygame.mouse.get_pos()
-        hovered = self.rect.collidepoint(mouse)
+        self.hovered = self.rect.collidepoint(mouse)
+
+        color = self.hover_color if self.hovered else self.base_color
 
         # Glow effect
-        if hovered:
+        if self.hovered:
             glow_rect = self.rect.inflate(12, 12)
             pygame.draw.rect(screen, (255, 215, 0), glow_rect, border_radius=18)
 
-        # Button body
-        color = self.hover_color if hovered else self.base_color
+        # Main button
         pygame.draw.rect(screen, color, self.rect, border_radius=15)
-
-        # Border
         pygame.draw.rect(screen, self.border_color, self.rect, width=2, border_radius=15)
 
         # Text
@@ -42,7 +45,7 @@ class Button:
         )
 
 
-class MenuScene:
+class Menu:
     def __init__(self, game):
         self.game = game
 
@@ -54,6 +57,9 @@ class MenuScene:
         self.title_font = pygame.font.Font(None, 100)
         self.subtitle_font = pygame.font.Font(None, 36)
         self.button_font = pygame.font.Font(None, 42)
+
+        # Animated background
+        self.particles = []
 
         # Buttons
         button_width = 280
@@ -69,57 +75,42 @@ class MenuScene:
             Button("Exit", center_x, start_y + gap * 3, button_width, button_height, "exit")
         ]
 
-        # Background particles
-        self.particles = []
+        # Create floating particles
         for i in range(40):
-            x = (i * 37) % self.width
-            y = (i * 17) % self.height
-            speed = (i % 3) + 1
-            self.particles.append([x, y, speed])
-
-    def handle_event(self, event):
-        for button in self.buttons:
-            if button.clicked(event):
-
-                if button.action == "ai":
-                    # Replace later with AI game mode
-                    self.game.current_scene = GameScene(self.game)
-
-                elif button.action == "multi":
-                    # Replace later with Multiplayer mode
-                    self.game.current_scene = GameScene(self.game)
-
-                elif button.action == "resume":
-                    # Replace later with saved game logic
-                    self.game.current_scene = GameScene(self.game)
-
-                elif button.action == "exit":
-                    pygame.quit()
-                    exit()
-
-    def update(self):
-        # Animate particles
-        for particle in self.particles:
-            particle[1] += particle[2]
-
-            if particle[1] > self.height:
-                particle[1] = 0
+            self.particles.append([
+                pygame.Vector2(
+                    pygame.mouse.get_pos()[0] % self.width,
+                    (i * 17) % self.height
+                ),
+                (i % 3) + 1
+            ])
 
     def draw_background(self, screen):
-        # Gradient
+        # Gradient background
         for y in range(self.height):
             color_value = int(20 + (y / self.height) * 40)
             pygame.draw.line(screen, (10, 10, color_value), (0, y), (self.width, y))
 
         # Floating particles
-        for x, y, speed in self.particles:
-            pygame.draw.circle(screen, (255, 215, 0), (x, y), 2)
+        for particle in self.particles:
+            particle[0].y += particle[1]
+            if particle[0].y > self.height:
+                particle[0].y = 0
+
+            pygame.draw.circle(
+                screen,
+                (255, 215, 0),
+                (int(particle[0].x), int(particle[0].y)),
+                2
+            )
 
     def draw_title(self, screen):
+        # Main title
         title = self.title_font.render("CHESS MASTER", True, (255, 215, 0))
         title_rect = title.get_rect(center=(self.width // 2, 120))
         screen.blit(title, title_rect)
 
+        # Subtitle
         subtitle = self.subtitle_font.render(
             "Strategy • Intelligence • Victory",
             True,
@@ -134,3 +125,13 @@ class MenuScene:
 
         for button in self.buttons:
             button.draw(screen, self.button_font)
+
+    def handle_event(self, event):
+        for button in self.buttons:
+            if button.clicked(event):
+                if button.action == "exit":
+                    pygame.quit()
+                    exit()
+                return button.action
+
+        return None

@@ -7,25 +7,20 @@ class Pawn(Piece):
 
     def get_valid_moves(self, board):
         moves = []
-
         direction = -1 if self.color == "white" else 1
- # forward 2 (first move)
-        if not self.has_moved:
-            if board.is_empty(self.row + 2 * direction, self.col):
-                moves.append((self.row + 2 * direction, self.col))
-
-        # forward 1
 
         if board.is_empty(self.row + direction, self.col):
             moves.append((self.row + direction, self.col))
 
-       
-        # capture diagonally
-        for dc in [-1, 1]:
-            new_row = self.row + direction
-            new_col = self.col + dc
+        if not self.has_moved:
+            if (board.is_empty(self.row + direction, self.col) and
+                board.is_empty(self.row + 2*direction, self.col)):
+                moves.append((self.row + 2*direction, self.col))
 
-            if board.has_enemy_piece(new_row, new_col, self.color):
-                moves.append((new_row, new_col))
+        for dc in [-1, 1]:
+            r = self.row + direction
+            c = self.col + dc
+            if board.has_enemy_piece(r, c, self.color):
+                moves.append((r, c))
 
         return moves
