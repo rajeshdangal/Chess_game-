@@ -13,6 +13,7 @@ OFFSET_X = 100
 OFFSET_Y = 100
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 # Chess.com-style colors
 LIGHT_TILE = (238, 238, 210)
@@ -22,6 +23,8 @@ SELECT_COLOR = (246, 246, 105)
 MOVE_COLOR = (186, 202, 68)
 
 >>>>>>> 49c4671 (changed the board)
+=======
+>>>>>>> f9b046f (nn)
 
 class Board:
     def __init__(self):
@@ -38,11 +41,16 @@ class Board:
             self.tiles.append([])
             for col in range(8):
 <<<<<<< HEAD
+<<<<<<< HEAD
 
                 color = (240, 217, 181) if (row + col) % 2 == 0 else (181, 136, 99)
 =======
                 color = LIGHT_TILE if (row + col) % 2 == 0 else DARK_TILE
 >>>>>>> 49c4671 (changed the board)
+=======
+
+                color = (240, 217, 181) if (row + col) % 2 == 0 else (181, 136, 99)
+>>>>>>> f9b046f (nn)
 
                 tile = Tile(
                     OFFSET_X + col * TILE_SIZE,
@@ -66,43 +74,61 @@ class Board:
             self.tiles[6][col].piece = Pawn(6, col, "white")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Rooks
 =======
 >>>>>>> 49c4671 (changed the board)
+=======
+        # Rooks
+>>>>>>> f9b046f (nn)
         self.tiles[0][0].piece = Rook(0, 0, "black")
         self.tiles[0][7].piece = Rook(0, 7, "black")
         self.tiles[7][0].piece = Rook(7, 0, "white")
         self.tiles[7][7].piece = Rook(7, 7, "white")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Knights
 =======
 >>>>>>> 49c4671 (changed the board)
+=======
+        # Knights
+>>>>>>> f9b046f (nn)
         self.tiles[0][1].piece = Knight(0, 1, "black")
         self.tiles[0][6].piece = Knight(0, 6, "black")
         self.tiles[7][1].piece = Knight(7, 1, "white")
         self.tiles[7][6].piece = Knight(7, 6, "white")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Bishops
 =======
 >>>>>>> 49c4671 (changed the board)
+=======
+        # Bishops
+>>>>>>> f9b046f (nn)
         self.tiles[0][2].piece = Bishop(0, 2, "black")
         self.tiles[0][5].piece = Bishop(0, 5, "black")
         self.tiles[7][2].piece = Bishop(7, 2, "white")
         self.tiles[7][5].piece = Bishop(7, 5, "white")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f9b046f (nn)
         # Queens
         self.tiles[0][3].piece = Queen(0, 3, "black")
         self.tiles[7][3].piece = Queen(7, 3, "white")
 
         # Kings
+<<<<<<< HEAD
 =======
         self.tiles[0][3].piece = Queen(0, 3, "black")
         self.tiles[7][3].piece = Queen(7, 3, "white")
 
 >>>>>>> 49c4671 (changed the board)
+=======
+>>>>>>> f9b046f (nn)
         self.tiles[0][4].piece = King(0, 4, "black")
         self.tiles[7][4].piece = King(7, 4, "white")
 
@@ -116,6 +142,7 @@ class Board:
 
                 tile.draw(screen)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
                 # Highlight selected piece
                 if selected_piece and (row, col) == (selected_piece.row, selected_piece.col):
@@ -161,26 +188,55 @@ class Board:
 
         # Normal move
 =======
+=======
+                # Highlight selected piece
+>>>>>>> f9b046f (nn)
                 if selected_piece and (row, col) == (selected_piece.row, selected_piece.col):
-                    pygame.draw.rect(screen, SELECT_COLOR, tile.rect, 4)
+                    pygame.draw.rect(screen, (0, 255, 0), tile.rect, 3)
 
+                # Highlight valid moves
                 if valid_moves and (row, col) in valid_moves:
-                    pygame.draw.rect(screen, MOVE_COLOR, tile.rect, 4)
+                    pygame.draw.rect(screen, (0, 0, 255), tile.rect, 3)
+
+    # ----------------------------
+    # HELPERS
+    # ----------------------------
+    def in_bounds(self, row, col):
+        return 0 <= row < 8 and 0 <= col < 8
 
     def is_empty(self, row, col):
-        return self.in_bounds(row, col) and self.tiles[row][col].piece is None
+        if self.in_bounds(row, col):
+            return self.tiles[row][col].piece is None
+        return False
 
     def has_enemy_piece(self, row, col, color):
         if self.in_bounds(row, col):
             piece = self.tiles[row][col].piece
-            return piece and piece.color != color
+            return piece is not None and piece.color != color
         return False
 
-    def in_bounds(self, row, col):
-        return 0 <= row < 8 and 0 <= col < 8
-
+    # ----------------------------
+    # MOVE PIECE + KING CAPTURE
+    # ----------------------------
     def move_piece(self, piece, row, col):
+<<<<<<< HEAD
 >>>>>>> 49c4671 (changed the board)
+=======
+
+        target_piece = self.tiles[row][col].piece
+
+        # If king is captured → game over
+        if target_piece and target_piece.__class__.__name__ == "King":
+            self.tiles[piece.row][piece.col].piece = None
+            self.tiles[row][col].piece = piece
+
+            piece.row = row
+            piece.col = col
+
+            return f"Congratulations {piece.color.capitalize()} Wins!"
+
+        # Normal move
+>>>>>>> f9b046f (nn)
         self.tiles[piece.row][piece.col].piece = None
         self.tiles[row][col].piece = piece
 
@@ -189,9 +245,15 @@ class Board:
 
         if hasattr(piece, "has_moved"):
 <<<<<<< HEAD
+<<<<<<< HEAD
             piece.has_moved = True
 
         return None
 =======
             piece.has_moved = True
 >>>>>>> 49c4671 (changed the board)
+=======
+            piece.has_moved = True
+
+        return None
+>>>>>>> f9b046f (nn)
