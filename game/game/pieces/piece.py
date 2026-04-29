@@ -1,5 +1,6 @@
 import pygame
 
+
 class Piece:
     def __init__(self, row, col, color):
         self.row = row
@@ -7,8 +8,15 @@ class Piece:
         self.color = color
 
     def draw(self, screen, x, y):
-        color = (255, 0, 0) if self.color == "white" else (0, 0, 255)
-        pygame.draw.circle(screen, color, (x + 40, y + 40), 20)
 
-    def get_valid_moves(self, board):
-        return []
+        # White and Black pieces
+        piece_color = (245, 245, 245) if self.color == "white" else (30, 30, 30)
+
+        # Outline for visibility
+        outline_color = (0, 0, 0) if self.color == "white" else (255, 255, 255)
+
+        # Draw main piece
+        pygame.draw.circle(screen, piece_color, (x + 40, y + 40), 25)
+
+        # Draw border
+        pygame.draw.circle(screen, outline_color, (x + 40, y + 40), 25, 2)
