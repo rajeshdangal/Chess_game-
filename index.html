@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,85 +10,74 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="topbar">
+  <header class="topbar">
     <div class="container nav">
       <div class="brand">
-        <div class="logo" aria-label="Chess logo">♟</div>
+        <div class="logo">♟</div>
         <div>
-          <div>Chess Project</div>
-          <small class="muted">LAN Chess Game Showcase</small>
+          <div class="brand-title">Chess Project Showcase</div>
+          <small class="muted">Sagarmatha Group</small>
         </div>
       </div>
-      <div class="nav-links">
+      <nav class="nav-links">
         <a href="#about">About</a>
-        <a href="#feasibility">Feasibility</a>
-        <a href="#architecture">Architecture</a>
         <a href="#features">Features</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#preview">Game Preview</a>
         <a href="#team">Team</a>
         <a href="#download">Download</a>
-      </div>
+      </nav>
     </div>
-  </div>
+  </header>
 
   <main>
-    <section class="hero">
+    <section class="hero fade-section">
       <div class="container hero-grid">
-        <div class="hero-card">
-          <div class="eyebrow">Final Project Showcase</div>
-          <h1>Our Chess Game, built for presentation, gameplay, and LAN multiplayer.</h1>
+        <div class="hero-copy">
+          <span class="eyebrow">Final Project Showcase</span>
+          <h1>We built a chess game in Python with a clean interface and local multiplayer support.</h1>
           <p class="lead">
-            This project is a Python and Pygame chess game with a menu, game scenes, board logic, piece movement,
-            save/load support, and planned local network multiplayer using sockets.
+            Our group created this project using Python and Pygame. It includes a menu, chess logic,
+            piece movement, save and load support, and LAN multiplayer planning.
           </p>
 
-          <div class="actions">
-            <a class="btn btn-primary" href="#download">Download Latest Build</a>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#download">Download Build</a>
             <a class="btn btn-secondary" href="https://github.com/rajeshdangal/Chess_game-" target="_blank" rel="noopener noreferrer">View Repository</a>
           </div>
 
-          <div class="mini-stats">
+          <div class="hero-stats">
             <div>
-              <strong>Team Project</strong>
-              <span class="muted">Built with branches and collaboration</span>
+              <strong>Group Project</strong>
+              <span>Built together as a team</span>
             </div>
             <div>
               <strong>LAN Ready</strong>
-              <span class="muted">Networking planned with Python sockets</span>
+              <span>Local multiplayer planned with sockets</span>
             </div>
             <div>
               <strong>Save System</strong>
-              <span class="muted">Game state persistence included</span>
+              <span>Game states can be stored</span>
             </div>
           </div>
         </div>
 
-        <div class="board-card">
-          <div class="board-top">
+        <div class="hero-card">
+          <div class="hero-card-top">
             <h3>Project Preview</h3>
-            <span class="board-badge">Chess theme layout</span>
+            <span>Real screenshot</span>
           </div>
-
-          <div class="board" aria-label="Decorative chessboard preview">
-            <div class="sq light">♜</div><div class="sq dark">♞</div><div class="sq light">♝</div><div class="sq dark">♛</div><div class="sq light">♚</div><div class="sq dark">♝</div><div class="sq light">♞</div><div class="sq dark">♜</div>
-            <div class="sq dark">♟</div><div class="sq light">♟</div><div class="sq dark">♟</div><div class="sq light">♟</div><div class="sq dark">♟</div><div class="sq light">♟</div><div class="sq dark">♟</div><div class="sq light">♟</div>
-            <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
-            <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
-            <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
-            <div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div>
-            <div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div><div class="sq light"></div><div class="sq dark"></div>
-            <div class="sq dark">♙</div><div class="sq light">♙</div><div class="sq dark">♙</div><div class="sq light">♙</div><div class="sq dark">♙</div><div class="sq light">♙</div><div class="sq dark">♙</div><div class="sq light">♙</div>
-            <div class="sq light">♖</div><div class="sq dark">♘</div><div class="sq light">♗</div><div class="sq dark">♕</div><div class="sq light">♔</div><div class="sq dark">♗</div><div class="sq light">♘</div><div class="sq dark">♖</div>
-          </div>
+          <img src="images/Chessboard.png" alt="Chess game screenshot" class="preview-img">
         </div>
       </div>
     </section>
 
-    <section id="about">
+    <section id="about" class="fade-section">
       <div class="container">
         <div class="section-head">
           <div>
             <h2>About the project</h2>
-            <p class="muted">This page is meant to present the project clearly to teachers and reviewers.</p>
+            <p>We made this page to present our chess game clearly for teachers and reviewers.</p>
           </div>
         </div>
 
@@ -96,61 +85,71 @@
           <article class="card">
             <div class="icon">♟</div>
             <h3>Purpose</h3>
-            <p>The project is a chess game built in Python using Pygame and organized into multiple classes and scenes for a cleaner design.</p>
+            <p>We built this chess game in Python with Pygame to show gameplay, design, and structured code.</p>
           </article>
 
           <article class="card">
             <div class="icon">♜</div>
             <h3>Current state</h3>
-            <p>The project already includes board drawing, piece setup, movement logic, turn handling, menu flow, and a save system.</p>
+            <p>The project already includes board drawing, piece setup, movement logic, turn handling, and a save system.</p>
           </article>
 
           <article class="card">
             <div class="icon">♚</div>
-            <h3>Future goal</h3>
-            <p>The next goal is local multiplayer over LAN using sockets, plus testing and polish before the final submission.</p>
+            <h3>Goal</h3>
+            <p>Our aim was to create a playable chess game with local multiplayer support and a clean presentation page.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="feasibility">
+    <section id="features" class="fade-section">
       <div class="container">
         <div class="section-head">
           <div>
-            <h2>Feasibility study</h2>
-            <p class="muted">A short summary of why the project is realistic and how it will be delivered.</p>
+            <h2>Features</h2>
+            <p>These are the main features included in our project.</p>
           </div>
         </div>
 
         <div class="cards">
           <article class="card">
-            <h3>Technical feasibility</h3>
-            <p>Python and Pygame are suitable for the game interface and chess logic, while sockets can handle LAN multiplayer and JSON or SQLite can support saving data.</p>
+            <div class="icon">♞</div>
+            <h3>Menu system</h3>
+            <p>A start menu lets the user begin the game and move through the available options.</p>
           </article>
 
           <article class="card">
-            <h3>Schedule feasibility</h3>
-            <p>The work can be completed in phases: board and movement first, then rules, then multiplayer, then save/load and testing, with optional features left out if time is limited.</p>
+            <div class="icon">♕</div>
+            <h3>Chess logic</h3>
+            <p>The game handles board rules, turn switching, and valid movement for the pieces.</p>
           </article>
 
           <article class="card">
-            <h3>Resource feasibility</h3>
-            <p>The project uses free tools such as Python, Pygame, GitHub, sockets, and Windows development machines, so no special paid software is required.</p>
+            <div class="icon">⬇</div>
+            <h3>Save and load</h3>
+            <p>The game state can be stored and continued later from a saved session.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon">🌐</div>
+            <h3>Local multiplayer</h3>
+            <p>We designed the project to support multiplayer on the same network using Python sockets.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="architecture">
+    <section id="architecture" class="fade-section">
       <div class="container">
         <div class="section-head">
           <div>
             <h2>System architecture</h2>
-            <p class="muted">This is  object-oriented structure.</p>
+            <p>This shows the object-oriented structure of the application.</p>
           </div>
         </div>
-        <div class="card uml-card">
+
+        <div class="uml-card">
           <h3>UML class diagram</h3>
           <img src="images/uml_chess.jpg" alt="UML class diagram for the chess project" class="uml-image">
         </div>
@@ -159,148 +158,115 @@
           <article class="card">
             <div class="icon">🧠</div>
             <h3>Game core</h3>
-            <p>The Game and Scene classes control the application flow, menu transitions, and the active game scene.</p>
+            <p>The Game and Scene classes control the flow of the application, menu transitions, and active game state.</p>
           </article>
 
           <article class="card">
             <div class="icon">🧩</div>
             <h3>Board and pieces</h3>
-            <p>The Board, Tile, and Piece classes manage piece placement, movement rules, and rendering for each chess piece type.</p>
+            <p>The Board, Tile, and Piece classes manage placement, movement rules, and rendering.</p>
           </article>
 
           <article class="card">
             <div class="icon">🌐</div>
             <h3>Networking and save</h3>
-            <p>The SaveSystem stores game state, and the NetworkManager will support send and receive logic for LAN multiplayer.</p>
+            <p>The SaveSystem stores game state, and the NetworkManager supports LAN multiplayer communication.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="features">
+    <section id="preview" class="fade-section">
       <div class="container">
         <div class="section-head">
           <div>
-            <h2>Features</h2>
-            <p class="muted">Keep only the items that are actually finished in your codebase.</p>
+            <h2>Game Preview</h2>
+            <p>These previews show the real menu, gameplay, and paused state of our project.</p>
           </div>
         </div>
 
-        <div class="cards">
-          <article class="card">
-            <div class="icon">♞</div>
-            <h3>Menu system</h3>
-            <p>A start menu lets the user choose modes such as play, multiplayer, resume, or exit.</p>
+        <div class="screen-row">
+          <article class="shot">
+            <img src="images/Menu.png" alt="Chess game menu screen" class="screen-img">
+            <strong>Menu view</strong>
           </article>
 
-          <article class="card">
-            <div class="icon">♕</div>
-            <h3>Turn-based play</h3>
-            <p>The game alternates between white and black turns with piece selection and valid move handling.</p>
+          <article class="shot">
+            <img src="images/Chessboard.png" alt="Chess board screen" class="screen-img">
+            <strong>Board view</strong>
           </article>
 
-          <article class="card">
-            <div class="icon">⬇</div>
-            <h3>Save and load</h3>
-            <p>The save system is designed to store board state and player turn for later continuation.</p>
+          <article class="shot">
+            <img src="images/Paused game screen.png" alt="Paused game screen" class="screen-img">
+            <strong>Paused view</strong>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="progress">
-      <div class="container progress-grid">
-        <div class="timeline">
-          <h2>Risks and mitigation</h2>
-          <p class="muted">This helps show that you have thought about project problems in advance.</p>
-          <ul>
-            <li>Chess rules may be difficult, so they will be built step by step and tested often.</li>
-            <li>Multiplayer networking may fail at first, so LAN features will start simple and be tested early.</li>
-            <li>Time pressure will be handled by focusing on the core game first and skipping extras if needed.</li>
-          </ul>
+    <section id="team" class="fade-section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Team</h2>
+            <p>Our group members and their main contributions.</p>
+          </div>
         </div>
 
-        <div class="members" id="team">
-          <h2>Team section</h2>
+        <div class="team-grid">
+          <article class="team-card">
+            <img src="images/Sudan Shahi.jpg" alt="Sudan Shahi" class="team-photo">
+            <h3>Sudan Shahi</h3>
+            <p>Presentation and documentation</p>
+          </article>
 
-          <div class="team-grid">
-            <article class="team-card">
-              <img src="images/Sudan Shahi.jpg" alt="Team member 1" class="team-photo">
-              <h3>Sudan Shahi</h3>
-              <p>Presentation, documentation</p>
-            </article>
+          <article class="team-card">
+            <img src="images/Sambridha.jpg" alt="Sambridha Bdr Shahi" class="team-photo">
+            <h3>Sambridha Bdr Shahi</h3>
+            <p>Game logic and rules</p>
+          </article>
 
-            <article class="team-card">
-              <img src="images/Sambridha.jpg" alt="Team member 2" class="team-photo">
-              <h3>Sambridha Bdr Shahi</h3>
-              <p>Game logic and rules</p>
-            </article>
+          <article class="team-card">
+            <img src="images/Rajesh Dangal.jpg" alt="Rajesh Dangal" class="team-photo">
+            <h3>Rajesh Dangal</h3>
+            <p>UI design and testing</p>
+          </article>
 
-            <article class="team-card">
-              <img src="images/Rajesh Dangal.jpg" alt="Team member 3" class="team-photo">
-              <h3>Rajesh Dangal</h3>
-              <p>UI design and testing</p>
-            </article>
-
-            <article class="team-card">
-              <img src="images/Saman PAsa.jpeg" alt="Team member 4" class="team-photo">
-              <h3>Saman P Nakarmi</h3>
-              <p>Integration and networking</p>
-            </article>
-          </div>
+          <article class="team-card">
+            <img src="images/Saman PAsa.jpeg" alt="Saman P Nakarmi" class="team-photo">
+            <h3>Saman P Nakarmi</h3>
+            <p>Integration and networking</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <section id="screens">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <h2>Screenshots</h2>
-        <p class="muted">These images show the menu, gameplay, and paused state of the chess project.</p>
-      </div>
-    </div>
-
-    <div class="screen-row">
-      <article class="shot">
-        <img src="images/Menu.png" alt="Chess game menu screen" class="screen-img">
-        <strong>Menu screen</strong>
-      </article>
-
-      <article class="shot">
-        <img src="images/Chessboard.png" alt="Chess board screen" class="screen-img">
-        <strong>Game board</strong>
-      </article>
-
-      <article class="shot">
-        <img src="images/Paused game screen.png" alt="Paused game screen" class="screen-img">
-        <strong>Paused screen</strong>
-      </article>
-    </div>
-  </div>
-</section>
-
-    <section id="download">
+    <section id="download" class="fade-section">
       <div class="container">
         <div class="download-box">
           <h2>Download and repository</h2>
           <p>
-            The final downloadable version can be connected here using a GitHub Release link, a ZIP file, or another direct download URL once the stable build is ready.
+            The final downloadable version can be linked here using a GitHub Release page, a ZIP file,
+            or another direct download URL once the stable build is ready.
           </p>
           <div class="download-actions">
             <a class="btn btn-primary" href="https://github.com/rajeshdangal/Chess_game-/releases" target="_blank" rel="noopener noreferrer">Download Latest Version</a>
             <a class="btn btn-secondary" href="https://github.com/rajeshdangal/Chess_game-" target="_blank" rel="noopener noreferrer">Open GitHub Repository</a>
           </div>
-          <p><strong>Tip:</strong> replace the links with your real release page before submission.</p>
         </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="container">Chess Project Showcase page for student presentation and final submission.</div>
+  <footer class="fade-section">
+    <div class="container">
+      <div class="footer-copy">© 2026 Sagarmatha Group. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="https://github.com/rajeshdangal/Chess_game-" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="#team">Team</a>
+        <a href="#download">Download</a>
+      </div>
+    </div>
   </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
