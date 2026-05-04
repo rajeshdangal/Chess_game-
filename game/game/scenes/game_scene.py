@@ -8,6 +8,7 @@ OFFSET_X = 250
 OFFSET_Y = 120
 
 
+
 class GameScene:
     def __init__(self, game):
         self.game = game
@@ -142,6 +143,7 @@ class GameScene:
             col = (x - OFFSET_X) // TILE_SIZE
             row = (y - OFFSET_Y) // TILE_SIZE
 
+            # Outside board
             if not (0 <= row < 8 and 0 <= col < 8):
                 return
 
@@ -230,6 +232,9 @@ class GameScene:
             small_image = pygame.transform.scale(piece.image, (36, 36))
             screen.blit(small_image, (x, y))
 
+    # =====================================================
+    # DRAW
+    # =====================================================
     def draw(self, screen):
         screen.fill((40, 40, 40))
 

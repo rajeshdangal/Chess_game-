@@ -20,16 +20,21 @@ LAST_MOVE_COLOR = (205, 210, 106)
 MOVE_DOT_COLOR = (80, 80, 80)
 
 
+
 class Board:
     def __init__(self):
         self.tiles = []
         self.create_board()
 
+    # =========================================================
+    # CREATE BOARD
+    # =========================================================
     def create_board(self):
         self.tiles = []
 
         for row in range(8):
             self.tiles.append([])
+
             for col in range(8):
                 color = LIGHT_TILE if (row + col) % 2 == 0 else DARK_TILE
 
@@ -39,11 +44,17 @@ class Board:
                     TILE_SIZE,
                     color
                 )
+
                 self.tiles[row].append(tile)
 
         self.setup_pieces()
 
+    # =========================================================
+    # SETUP PIECES
+    # =========================================================
     def setup_pieces(self):
+
+        # Pawns
         for col in range(8):
             self.tiles[1][col].piece = Pawn(1, col, "black")
             self.tiles[6][col].piece = Pawn(6, col, "white")
@@ -72,6 +83,7 @@ class Board:
     def draw(self, screen, selected_piece=None, valid_moves=None, last_move=None, dragging_piece=None):
         for row in range(8):
             for col in range(8):
+
                 tile = self.tiles[row][col]
                 tile.draw(screen)
 
@@ -107,6 +119,7 @@ class Board:
 
         self.tiles[piece.row][piece.col].piece = None
         self.tiles[row][col].piece = piece
+
         piece.row = row
         piece.col = col
 

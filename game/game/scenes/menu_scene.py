@@ -69,16 +69,22 @@ class MenuScene:
             speed = (i % 3) + 1
             self.particles.append([x, y, speed])
 
+    # ----------------------------
+    # HANDLE EVENTS
+    # ----------------------------
     def handle_event(self, event):
         for button in self.buttons:
             if button.clicked(event):
 
+                # Play with AI
                 if button.action == "ai":
                     self.game.current_scene = GameScene(self.game)
 
+                # Multiplayer
                 elif button.action == "multi":
                     self.game.current_scene = GameScene(self.game)
 
+                # Resume
                 elif button.action == "resume":
                     scene = GameScene(self.game)
                     data = load_game(scene.board)
@@ -93,10 +99,14 @@ class MenuScene:
                     else:
                         print("No saved game found.")
 
+                # Exit
                 elif button.action == "exit":
                     pygame.quit()
                     exit()
 
+    # ----------------------------
+    # UPDATE
+    # ----------------------------
     def update(self):
         for particle in self.particles:
             particle[1] += particle[2]
@@ -104,16 +114,32 @@ class MenuScene:
             if particle[1] > self.height:
                 particle[1] = 0
 
+    # ----------------------------
+    # DRAW BACKGROUND
+    # ----------------------------
     def draw_background(self, screen):
         for y in range(self.height):
             color_value = int(20 + (y / self.height) * 40)
-            pygame.draw.line(screen, (10, 10, color_value), (0, y), (self.width, y))
+            pygame.draw.line(
+                screen,
+                (10, 10, color_value),
+                (0, y),
+                (self.width, y)
+            )
 
         for x, y, speed in self.particles:
             pygame.draw.circle(screen, (255, 215, 0), (x, y), 2)
 
+    # ----------------------------
+    # DRAW TITLE
+    # ----------------------------
     def draw_title(self, screen):
-        title = self.title_font.render("CHESS MASTER", True, (255, 215, 0))
+        title = self.title_font.render(
+            "CHESS MASTER",
+            True,
+            (255, 215, 0)
+        )
+
         title_rect = title.get_rect(center=(self.width // 2, 120))
         screen.blit(title, title_rect)
 
@@ -122,9 +148,13 @@ class MenuScene:
             True,
             (220, 220, 220)
         )
+
         subtitle_rect = subtitle.get_rect(center=(self.width // 2, 180))
         screen.blit(subtitle, subtitle_rect)
 
+    # ----------------------------
+    # DRAW
+    # ----------------------------
     def draw(self, screen):
         self.draw_background(screen)
         self.draw_title(screen)

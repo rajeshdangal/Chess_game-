@@ -5,6 +5,14 @@ class Piece:
     SIZE = 80
 
     def __init__(self, row, col, color):
+        """
+        Base class for all chess pieces.
+
+        Args:
+            row (int): Board row position
+            col (int): Board column position
+            color (str): "white" or "black"
+        """
         self.row = row
         self.col = col
         self.color = color
