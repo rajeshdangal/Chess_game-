@@ -1,5 +1,6 @@
 import pygame
 from game.scenes.game_scene import GameScene
+from game.save_manager import load_game
 
 
 class Button:
@@ -17,19 +18,14 @@ class Button:
         mouse = pygame.mouse.get_pos()
         hovered = self.rect.collidepoint(mouse)
 
-        # Glow effect
         if hovered:
             glow_rect = self.rect.inflate(12, 12)
             pygame.draw.rect(screen, (255, 215, 0), glow_rect, border_radius=18)
 
-        # Button body
         color = self.hover_color if hovered else self.base_color
         pygame.draw.rect(screen, color, self.rect, border_radius=15)
-
-        # Border
         pygame.draw.rect(screen, self.border_color, self.rect, width=2, border_radius=15)
 
-        # Text
         text_surface = font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
@@ -46,16 +42,13 @@ class MenuScene:
     def __init__(self, game):
         self.game = game
 
-        # Screen size
-        self.width = 800
-        self.height = 700
+        self.width = 1300
+        self.height = 900
 
-        # Fonts
         self.title_font = pygame.font.Font(None, 100)
         self.subtitle_font = pygame.font.Font(None, 36)
         self.button_font = pygame.font.Font(None, 42)
 
-        # Buttons
         button_width = 280
         button_height = 60
         center_x = (self.width - button_width) // 2
@@ -69,7 +62,6 @@ class MenuScene:
             Button("Exit", center_x, start_y + gap * 3, button_width, button_height, "exit")
         ]
 
-        # Background particles
         self.particles = []
         for i in range(40):
             x = (i * 37) % self.width
@@ -82,23 +74,30 @@ class MenuScene:
             if button.clicked(event):
 
                 if button.action == "ai":
-                    # Replace later with AI game mode
                     self.game.current_scene = GameScene(self.game)
 
                 elif button.action == "multi":
-                    # Replace later with Multiplayer mode
                     self.game.current_scene = GameScene(self.game)
 
                 elif button.action == "resume":
-                    # Replace later with saved game logic
-                    self.game.current_scene = GameScene(self.game)
+                    scene = GameScene(self.game)
+                    data = load_game(scene.board)
+
+                    if data:
+                        scene.turn = data["current_turn"]
+                        scene.move_history = data["move_history"]
+                        scene.selected_piece = None
+                        scene.valid_moves = []
+                        self.game.current_scene = scene
+                        print("Saved game resumed!")
+                    else:
+                        print("No saved game found.")
 
                 elif button.action == "exit":
                     pygame.quit()
                     exit()
 
     def update(self):
-        # Animate particles
         for particle in self.particles:
             particle[1] += particle[2]
 
@@ -106,12 +105,10 @@ class MenuScene:
                 particle[1] = 0
 
     def draw_background(self, screen):
-        # Gradient
         for y in range(self.height):
             color_value = int(20 + (y / self.height) * 40)
             pygame.draw.line(screen, (10, 10, color_value), (0, y), (self.width, y))
 
-        # Floating particles
         for x, y, speed in self.particles:
             pygame.draw.circle(screen, (255, 215, 0), (x, y), 2)
 
