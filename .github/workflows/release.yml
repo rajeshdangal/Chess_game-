@@ -1,0 +1,32 @@
+name: Build Chess Game
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller pygame
+    
+    - name: Build executable
+      run: |
+        cd chess_game-
+        pyinstaller --onefile --windowed --add-data "assets;assets" --add-data "game;game" game/main.py
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: chess_game-/dist/main.exe
