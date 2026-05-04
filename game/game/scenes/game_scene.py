@@ -33,7 +33,7 @@ class GameScene:
         self.move_history = []
 
         self.ai_enabled = True
-        self.ai = ChessAI("black")
+        self.ai = ChessAI("black", depth=2)
 
         self.game_over = False
         self.winner = None
