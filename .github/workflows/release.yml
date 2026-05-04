@@ -6,12 +6,17 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
     - uses: actions/setup-python@v5
       with:
@@ -25,22 +30,18 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --add-data "assets;assets" --add-data "game;game" game/main.py --name ChessGame
     
-    - name: Get version
-      id: version
-      run: |
-        echo "VERSION=$(date +'%Y.%m.%d-%H%M%S')" >> $env:GITHUB_OUTPUT
-    
     - name: Create Release
       uses: ncipollo/release-action@v1
       with:
         artifacts: dist/ChessGame.exe
-        tag: v${{ steps.version.outputs.VERSION }}
-        name: Automatic Build ${{ steps.version.outputs.VERSION }}
+        tag: auto-build-${{ github.run_number }}
+        name: Automatic Build ${{ github.run_number }}
         body: |
-          ## Automatic release from main branch
-          - Commit: ${{ github.sha }}
-          - Build time: ${{ steps.version.outputs.VERSION }}
-          - Triggered by: Push to main branch
+          ## 🎲 Automatic Chess Game Build
+          - **Commit:** `${{ github.sha }}`
+          - **Trigger:** Push to main branch
+          - **Build #:** ${{ github.run_number }}
         token: ${{ secrets.GITHUB_TOKEN }}
         allowUpdates: true
         removeArtifacts: true
+        replacesArtifacts: true  # Add this to replace old artifacts
