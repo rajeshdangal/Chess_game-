@@ -1,6 +1,6 @@
 import pygame
 import os
-
+import sys
 
 class Piece:
     SIZE = 80
@@ -18,60 +18,40 @@ class Piece:
         self.col = col
         self.color = color
 
-        # Get piece class name automatically (rook, bishop, pawn, etc.)
         piece_name = self.__class__.__name__.lower()
+        filename = f"{piece_name}_{color}.png"
 
-        # Example: rook_white.png / rook_black.png
-        filename = f"{piece_name}_{self.color}.png"
+        # Get the correct path for both development and PyInstaller
+        path = self.get_resource_path(filename)
+        
+        try:
+            self.image = pygame.image.load(path)
+            self.image = pygame.transform.scale(self.image, (self.SIZE, self.SIZE))
+        except FileNotFoundError:
+            print(f"ERROR: Could not find image at {path}")
+            # Create a fallback colored rectangle
+            self.image = pygame.Surface((self.SIZE, self.SIZE))
+            self.image.fill((255, 0, 255))  # Magenta = missing
 
-        # Absolute path to project root:
-        # game/game/pieces/piece.py -> go up 4 folders
-        base_path = os.path.dirname(
-            os.path.dirname(
-                os.path.dirname(
-                    os.path.dirname(__file__)
-                )
-            )
-        )
-
-        # Full image path
-        image_path = os.path.join(base_path, "assets", "pieces", filename)
-
-        # Load piece image safely
-        if os.path.exists(image_path):
-            self.image = pygame.image.load(image_path).convert_alpha()
-            self.image = pygame.transform.scale(
-                self.image, (self.SIZE, self.SIZE)
-            )
+    def get_resource_path(self, filename):
+        """Get absolute path to resource, works for dev and for PyInstaller"""
+        # Check if we're running as a PyInstaller bundle
+        if getattr(sys, 'frozen', False):
+            # Running in a PyInstaller bundle
+            base_path = sys._MEIPASS
+            print(f"PyInstaller mode - base path: {base_path}")
         else:
-            # Fallback if image missing
-            print(f"Warning: Missing image file -> {image_path}")
-            self.image = None
-
-    def move(self, row, col):
-        """
-        Update piece position.
-        """
-        self.row = row
-        self.col = col
+            # Running in normal development mode
+            # Go up from game/pieces/ to project root (4 levels)
+            base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            print(f"Development mode - base path: {base_path}")
+        
+        # Construct the full path to the image
+        full_path = os.path.join(base_path, "assets", "pieces", filename)
+        print(f"Looking for image: {full_path}")
+        print(f"File exists: {os.path.exists(full_path)}")
+        
+        return full_path
 
     def draw(self, screen, x, y):
-        """
-        Draw the piece on the board.
-        """
-        if self.image:
-            screen.blit(self.image, (x, y))
-        else:
-            # Emergency fallback visual if image is missing
-            piece_color = (245, 245, 245) if self.color == "white" else (30, 30, 30)
-            outline_color = (0, 0, 0) if self.color == "white" else (255, 255, 255)
-
-            pygame.draw.circle(screen, piece_color, (x + self.SIZE // 2, y + self.SIZE // 2), 25)
-            pygame.draw.circle(screen, outline_color, (x + self.SIZE // 2, y + self.SIZE // 2), 25, 2)
-
-    def valid_moves(self, board):
-        """
-        Override this in child classes (Pawn, Rook, Bishop, etc.)
-        Returns a list of valid moves.
-        """
-        return []
+        screen.blit(self.image, (x, y))

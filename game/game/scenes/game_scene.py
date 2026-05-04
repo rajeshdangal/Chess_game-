@@ -1,9 +1,12 @@
 import pygame
+from game.save_manager import save_game, load_game
 from game.board.board import Board
+from game.ai.chess_ai import ChessAI
 
 TILE_SIZE = 80
-OFFSET_X = 100
-OFFSET_Y = 100
+OFFSET_X = 250
+OFFSET_Y = 120
+
 
 
 class GameScene:
@@ -13,128 +16,128 @@ class GameScene:
 
         self.selected_piece = None
         self.valid_moves = []
+        self.last_move = None
+
+        self.dragging = False
+        self.dragging_piece = None
+        self.drag_pos = (0, 0)
+
+        self.animating = False
+        self.animation_piece = None
+        self.animation_start = (0, 0)
+        self.animation_end = (0, 0)
+        self.animation_progress = 0
+        self.animation_speed = 0.15
+
+        self.turn = "white"
+        self.move_history = []
+
+        self.ai_enabled = True
+        self.ai = ChessAI("black", depth=2)
+
+        self.game_over = False
+        self.winner = None
+
+        self.captured_white = []
+        self.captured_black = []
+
+        self.turn_font = pygame.font.Font(None, 42)
+        self.win_font = pygame.font.Font(None, 80)
+        self.captured_font = pygame.font.Font(None, 30)
+
+    def start_animation(self, piece, old_row, old_col, new_row, new_col):
+        self.animating = True
+        self.animation_piece = piece
+        self.animation_start = (
+            OFFSET_X + old_col * TILE_SIZE,
+            OFFSET_Y + old_row * TILE_SIZE
+        )
+        self.animation_end = (
+            OFFSET_X + new_col * TILE_SIZE,
+            OFFSET_Y + new_row * TILE_SIZE
+        )
+        self.animation_progress = 0
+
+    def finish_move(self, piece, old_row, old_col, row, col):
+        captured_piece = self.board.move_piece(piece, row, col)
+
+        if captured_piece:
+            if captured_piece.color == "white":
+                self.captured_white.append(captured_piece)
+            else:
+                self.captured_black.append(captured_piece)
+
+        self.last_move = ((old_row, old_col), (row, col))
+
+        self.move_history.append({
+            "piece": piece.__class__.__name__,
+            "color": piece.color,
+            "from": [old_row, old_col],
+            "to": [row, col],
+            "captured": captured_piece.__class__.__name__ if captured_piece else None
+        })
+
+    def make_ai_move(self):
+        move = self.ai.choose_move(self.board)
+
+        if move is None:
+            if self.board.is_checkmate("black"):
+                self.game_over = True
+                self.winner = "White"
+            return
+
+        piece, row, col = move
+        old_row = piece.row
+        old_col = piece.col
+
+        self.finish_move(piece, old_row, old_col, row, col)
+        self.start_animation(piece, old_row, old_col, row, col)
 
         self.turn = "white"
 
-        # =====================================================
-        # STATES
-        # =====================================================
-        self.game_over = False
-        self.winner = None
-        self.paused = False
+        if self.board.is_checkmate("white"):
+            self.game_over = True
+            self.winner = "Black"
 
-        # 16 move rule
-        self.no_capture_or_pawn_moves = 0
-
-        # =====================================================
-        # FONTS
-        # =====================================================
-        self.font = pygame.font.Font(None, 60)
-        self.small_font = pygame.font.Font(None, 40)
-
-        # =====================================================
-        # BUTTONS
-        # =====================================================
-        # Top right pause button
-        self.pause_button = pygame.Rect(650, 20, 120, 40)
-
-        # Pause menu
-        self.resume_button = pygame.Rect(300, 300, 200, 50)
-        self.menu_button = pygame.Rect(300, 380, 200, 50)
-
-        # Game over menu
-        self.play_again_button = pygame.Rect(300, 380, 200, 50)
-        self.game_over_menu_button = pygame.Rect(300, 460, 200, 50)
-
-    # =====================================================
-    # CHECK FOR ANY VALID MOVES
-    # =====================================================
-    def has_any_valid_moves(self, color):
-
-        for row in range(8):
-            for col in range(8):
-
-                piece = self.board.tiles[row][col].piece
-
-                if piece and piece.color == color:
-
-                    moves = piece.get_valid_moves(self.board)
-
-                    for move in moves:
-
-                        if self.board.is_valid_move_safe(
-                            piece,
-                            move[0],
-                            move[1]
-                        ):
-                            return True
-
-        return False
-
-    # =====================================================
-    # HANDLE EVENTS
-    # =====================================================
     def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                save_game(self.board, self.turn, self.move_history)
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+                from game.scenes.menu_scene import MenuScene
+                self.game.current_scene = MenuScene(self.game)
 
-            # -------------------------------------------------
-            # PAUSE BUTTON
-            # -------------------------------------------------
-            if self.pause_button.collidepoint(event.pos) and not self.game_over:
-                self.paused = not self.paused
+                print("Game paused and saved!")
 
-                if self.paused:
-                    self.game.saved_scene = self
+            if event.key == pygame.K_s:
+                save_game(self.board, self.turn, self.move_history)
+                print("Game saved!")
 
-                return
+            if event.key == pygame.K_l:
+                data = load_game(self.board)
 
-            # -------------------------------------------------
-            # PAUSE MENU
-            # -------------------------------------------------
-            if self.paused:
+                if data:
+                    self.turn = data["current_turn"]
+                    self.move_history = data["move_history"]
+                    self.selected_piece = None
+                    self.valid_moves = []
+                    self.last_move = None
+                    self.dragging = False
+                    self.dragging_piece = None
+                    self.animating = False
+                    self.animation_piece = None
+                    self.game_over = False
+                    self.winner = None
+                    self.captured_white = []
+                    self.captured_black = []
+                    print("Game loaded!")
+                else:
+                    print("No saved game found.")
 
-                # Resume
-                if self.resume_button.collidepoint(event.pos):
-                    self.paused = False
-                    return
-
-                # Main Menu
-                if self.menu_button.collidepoint(event.pos):
-                    from game.scenes.menu_scene import MenuScene
-                    self.game.saved_scene = self
-                    self.game.current_scene = MenuScene(self.game)
-                    return
-
-                return
-
-            # -------------------------------------------------
-            # GAME OVER MENU
-            # -------------------------------------------------
-            if self.game_over:
-
-                # Play Again
-                if self.play_again_button.collidepoint(event.pos):
-                    self.game.current_scene = GameScene(self.game)
-                    return
-
-                # Main Menu
-                if self.game_over_menu_button.collidepoint(event.pos):
-                    from game.scenes.menu_scene import MenuScene
-                    self.game.current_scene = MenuScene(self.game)
-                    return
-
-                return
-
-        # Stop gameplay if paused or over
-        if self.paused or self.game_over:
+        if self.game_over or self.animating:
             return
 
-        # =====================================================
-        # NORMAL GAMEPLAY
-        # =====================================================
-        if event.type == pygame.MOUSEBUTTONDOWN:
-
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             x, y = event.pos
 
             col = (x - OFFSET_X) // TILE_SIZE
@@ -146,262 +149,130 @@ class GameScene:
 
             tile = self.board.tiles[row][col]
 
-            # -------------------------------------------------
-            # MOVE SELECTED PIECE
-            # -------------------------------------------------
-            if self.selected_piece:
+            if tile.piece and tile.piece.color == self.turn and self.turn == "white":
+                self.selected_piece = tile.piece
+                self.valid_moves = self.board.get_legal_moves(tile.piece)
 
-                if (row, col) in self.valid_moves:
+                self.dragging = True
+                self.dragging_piece = tile.piece
+                self.drag_pos = event.pos
 
-                    moving_piece = self.selected_piece
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                self.drag_pos = event.pos
 
-                    result = self.board.move_piece(
-                        moving_piece,
-                        row,
-                        col
-                    )
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if self.dragging and self.dragging_piece:
+                x, y = event.pos
 
-                    # 16 move rule reset
-                    if (
-                        result["capture"]
-                        or moving_piece.__class__.__name__ == "Pawn"
-                    ):
-                        self.no_capture_or_pawn_moves = 0
-                    else:
-                        self.no_capture_or_pawn_moves += 1
+                col = (x - OFFSET_X) // TILE_SIZE
+                row = (y - OFFSET_Y) // TILE_SIZE
 
-                    # Switch turn
-                    self.turn = (
-                        "black"
-                        if self.turn == "white"
-                        else "white"
-                    )
+                if (0 <= row < 8 and 0 <= col < 8) and (row, col) in self.valid_moves:
+                    piece = self.dragging_piece
+                    old_row = piece.row
+                    old_col = piece.col
 
-                    # =================================================
-                    # CHECKMATE
-                    # =================================================
-                    if (
-                        self.board.is_in_check(self.turn)
-                        and not self.has_any_valid_moves(self.turn)
-                    ):
+                    self.finish_move(piece, old_row, old_col, row, col)
+                    self.start_animation(piece, old_row, old_col, row, col)
+
+                    self.turn = "black"
+
+                    if self.board.is_checkmate("black"):
                         self.game_over = True
+                        self.winner = "White"
 
-                        winner_color = (
-                            "White"
-                            if self.turn == "black"
-                            else "Black"
-                        )
-
-                        self.winner = f"Checkmate! {winner_color} Wins!"
-
-                    # =================================================
-                    # STALEMATE
-                    # =================================================
-                    elif (
-                        not self.board.is_in_check(self.turn)
-                        and not self.has_any_valid_moves(self.turn)
-                    ):
-                        self.game_over = True
-                        self.winner = "Draw - Stalemate"
-
-                    # =================================================
-                    # ONLY KINGS LEFT
-                    # =================================================
-                    elif self.board.only_kings_left():
-                        self.game_over = True
-                        self.winner = "Draw - Only Kings Left"
-
-                    # =================================================
-                    # 16 MOVE RULE
-                    # =================================================
-                    elif self.no_capture_or_pawn_moves >= 16:
-                        self.game_over = True
-                        self.winner = "Draw - 16 Move Rule"
-
-                # Reset selection
+                self.dragging = False
+                self.dragging_piece = None
                 self.selected_piece = None
                 self.valid_moves = []
 
-            # -------------------------------------------------
-            # SELECT NEW PIECE
-            # -------------------------------------------------
-            elif tile.piece and tile.piece.color == self.turn:
-
-                self.selected_piece = tile.piece
-
-                all_moves = tile.piece.get_valid_moves(self.board)
-
-                # Only legal safe moves
-                self.valid_moves = [
-                    move for move in all_moves
-                    if self.board.is_valid_move_safe(
-                        tile.piece,
-                        move[0],
-                        move[1]
-                    )
-                ]
-
-    # =====================================================
-    # UPDATE
-    # =====================================================
     def update(self):
-        pass
+        if self.animating:
+            self.animation_progress += self.animation_speed
+
+            if self.animation_progress >= 1:
+                self.animation_progress = 1
+                self.animating = False
+                self.animation_piece = None
+
+                if self.turn == "black" and self.ai_enabled and not self.game_over:
+                    self.make_ai_move()
+
+    def draw_captured_pieces(self, screen):
+        panel_x = OFFSET_X + 8 * TILE_SIZE + 40
+        panel_y = OFFSET_Y
+        panel_w = 250
+        panel_h = 640
+
+        pygame.draw.rect(
+            screen,
+            (30, 30, 30),
+            (panel_x - 20, panel_y, panel_w, panel_h),
+            border_radius=14
+        )
+
+        title_black = self.captured_font.render("Black Captured", True, (255, 215, 0))
+        title_white = self.captured_font.render("White Captured", True, (255, 215, 0))
+
+        screen.blit(title_black, (panel_x, panel_y + 30))
+        screen.blit(title_white, (panel_x, panel_y + 300))
+
+        spacing = 42
+
+        for index, piece in enumerate(self.captured_black):
+            x = panel_x + (index % 4) * spacing
+            y = panel_y + 75 + (index // 4) * spacing
+            small_image = pygame.transform.scale(piece.image, (36, 36))
+            screen.blit(small_image, (x, y))
+
+        for index, piece in enumerate(self.captured_white):
+            x = panel_x + (index % 4) * spacing
+            y = panel_y + 345 + (index // 4) * spacing
+            small_image = pygame.transform.scale(piece.image, (36, 36))
+            screen.blit(small_image, (x, y))
 
     # =====================================================
     # DRAW
     # =====================================================
     def draw(self, screen):
+        screen.fill((40, 40, 40))
 
-        # Background
-        screen.fill((220, 220, 220))
+        hidden_piece = self.dragging_piece or self.animation_piece
 
-        # Board
         self.board.draw(
             screen,
             self.selected_piece,
-            self.valid_moves
+            self.valid_moves,
+            self.last_move,
+            hidden_piece
         )
 
-        # -------------------------------------------------
-        # TURN DISPLAY
-        # -------------------------------------------------
-        turn_text = self.small_font.render(
-            f"{self.turn.capitalize()}'s Turn",
-            True,
-            (0, 0, 0)
-        )
+        self.draw_captured_pieces(screen)
 
-        screen.blit(turn_text, (280, 30))
+        if self.animating and self.animation_piece:
+            sx, sy = self.animation_start
+            ex, ey = self.animation_end
 
-        # -------------------------------------------------
-        # CHECK WARNING
-        # -------------------------------------------------
-        if self.board.is_in_check(self.turn):
-            check_text = self.small_font.render(
-                "CHECK!",
-                True,
-                (255, 0, 0)
-            )
+            x = sx + (ex - sx) * self.animation_progress
+            y = sy + (ey - sy) * self.animation_progress
 
-            screen.blit(check_text, (350, 70))
+            self.animation_piece.draw(screen, x, y)
 
-        # -------------------------------------------------
-        # PAUSE BUTTON
-        # -------------------------------------------------
-        pygame.draw.rect(
-            screen,
-            (80, 80, 80),
-            self.pause_button,
-            border_radius=8
-        )
-
-        pause_label = "Resume" if self.paused else "Pause"
-
-        pause_text = self.small_font.render(
-            pause_label,
-            True,
-            (255, 255, 255)
-        )
-
-        screen.blit(pause_text, (670, 28))
-
-        # =====================================================
-        # PAUSE OVERLAY
-        # =====================================================
-        if self.paused:
-
-            overlay = pygame.Surface((800, 800))
-            overlay.set_alpha(180)
-            overlay.fill((0, 0, 0))
-            screen.blit(overlay, (0, 0))
-
-            paused_text = self.font.render(
-                "Game Paused",
-                True,
-                (255, 255, 255)
-            )
-
-            screen.blit(paused_text, (250, 200))
-
-            # Resume
-            pygame.draw.rect(
+        if self.dragging and self.dragging_piece:
+            x, y = self.drag_pos
+            self.dragging_piece.draw(
                 screen,
-                (100, 100, 100),
-                self.resume_button,
-                border_radius=10
+                x - TILE_SIZE // 2,
+                y - TILE_SIZE // 2
             )
 
-            resume_text = self.small_font.render(
-                "Resume",
-                True,
-                (255, 255, 255)
-            )
-
-            screen.blit(resume_text, (355, 315))
-
-            # Main Menu
-            pygame.draw.rect(
-                screen,
-                (100, 100, 100),
-                self.menu_button,
-                border_radius=10
-            )
-
-            menu_text = self.small_font.render(
-                "Main Menu",
-                True,
-                (255, 255, 255)
-            )
-
-            screen.blit(menu_text, (335, 395))
-
-        # =====================================================
-        # GAME OVER OVERLAY
-        # =====================================================
         if self.game_over:
+            message = f"{self.winner} Wins!"
+            text_surface = self.win_font.render(message, True, (255, 215, 0))
+        else:
+            message = f"{self.turn.capitalize()}'s Turn"
+            text_surface = self.turn_font.render(message, True, (255, 215, 0))
 
-            overlay = pygame.Surface((800, 800))
-            overlay.set_alpha(180)
-            overlay.fill((0, 0, 0))
-            screen.blit(overlay, (0, 0))
-
-            # Winner text
-            win_text = self.font.render(
-                self.winner,
-                True,
-                (255, 255, 255)
-            )
-
-            screen.blit(win_text, (140, 220))
-
-            # Play Again
-            pygame.draw.rect(
-                screen,
-                (100, 100, 100),
-                self.play_again_button,
-                border_radius=10
-            )
-
-            play_again_text = self.small_font.render(
-                "Play Again",
-                True,
-                (255, 255, 255)
-            )
-
-            screen.blit(play_again_text, (335, 395))
-
-            # Main Menu
-            pygame.draw.rect(
-                screen,
-                (100, 100, 100),
-                self.game_over_menu_button,
-                border_radius=10
-            )
-
-            menu_text = self.small_font.render(
-                "Main Menu",
-                True,
-                (255, 255, 255)
-            )
-
-            screen.blit(menu_text, (335, 475))
+        text_rect = text_surface.get_rect(center=(OFFSET_X + 4 * TILE_SIZE, 60))
+        screen.blit(text_surface, text_rect)
