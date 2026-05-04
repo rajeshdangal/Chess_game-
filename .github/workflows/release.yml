@@ -2,8 +2,8 @@ name: Build Chess Game
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -29,3 +29,12 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: dist/ChessGame.exe
+        tag_name: continuous-build-${{ github.run_number }}
+        name: Build ${{ github.run_number }}
+        body: |
+          ## Auto-built from main branch
+          - Commit: ${{ github.sha }}
+          - Build #: ${{ github.run_number }}
+          - Triggered by: Push to main branch
+        draft: false
+        prerelease: true
