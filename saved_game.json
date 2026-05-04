@@ -1,0 +1,198 @@
+{
+    "current_turn": "white",
+    "move_history": [],
+    "pieces": [
+        {
+            "type": "Rook",
+            "color": "black",
+            "row": 0,
+            "col": 0
+        },
+        {
+            "type": "Knight",
+            "color": "black",
+            "row": 0,
+            "col": 1
+        },
+        {
+            "type": "Bishop",
+            "color": "black",
+            "row": 0,
+            "col": 2
+        },
+        {
+            "type": "Queen",
+            "color": "black",
+            "row": 0,
+            "col": 3
+        },
+        {
+            "type": "King",
+            "color": "black",
+            "row": 0,
+            "col": 4
+        },
+        {
+            "type": "Bishop",
+            "color": "black",
+            "row": 0,
+            "col": 5
+        },
+        {
+            "type": "Knight",
+            "color": "black",
+            "row": 0,
+            "col": 6
+        },
+        {
+            "type": "Rook",
+            "color": "black",
+            "row": 0,
+            "col": 7
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 0
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 1
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 2
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 3
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 4
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 5
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 6
+        },
+        {
+            "type": "Pawn",
+            "color": "black",
+            "row": 1,
+            "col": 7
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 0
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 1
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 2
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 3
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 4
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 5
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 6
+        },
+        {
+            "type": "Pawn",
+            "color": "white",
+            "row": 6,
+            "col": 7
+        },
+        {
+            "type": "Rook",
+            "color": "white",
+            "row": 7,
+            "col": 0
+        },
+        {
+            "type": "Knight",
+            "color": "white",
+            "row": 7,
+            "col": 1
+        },
+        {
+            "type": "Bishop",
+            "color": "white",
+            "row": 7,
+            "col": 2
+        },
+        {
+            "type": "Queen",
+            "color": "white",
+            "row": 7,
+            "col": 3
+        },
+        {
+            "type": "King",
+            "color": "white",
+            "row": 7,
+            "col": 4
+        },
+        {
+            "type": "Bishop",
+            "color": "white",
+            "row": 7,
+            "col": 5
+        },
+        {
+            "type": "Knight",
+            "color": "white",
+            "row": 7,
+            "col": 6
+        },
+        {
+            "type": "Rook",
+            "color": "white",
+            "row": 7,
+            "col": 7
+        }
+    ]
+}
