@@ -154,6 +154,7 @@ class Board:
         piece.col = col
         piece.has_moved = True
 
+        # Pawn promotion to queen
         if self.check_promotion(piece):
             self.tiles[row][col].piece = Queen(row, col, piece.color)
 
@@ -200,7 +201,7 @@ class Board:
         captured_piece = self.tiles[new_row][new_col].piece
         en_passant_piece = None
 
-        # Simulate en passant capture
+        # Simulate en passant
         if piece.__class__.__name__ == "Pawn":
             if new_col != old_col and self.tiles[new_row][new_col].piece is None:
                 en_passant_piece = self.tiles[old_row][new_col].piece
@@ -295,6 +296,20 @@ class Board:
 
     def is_checkmate(self, color):
         if not self.is_in_check(color):
+            return False
+
+        for row in range(8):
+            for col in range(8):
+                piece = self.tiles[row][col].piece
+
+                if piece and piece.color == color:
+                    if self.get_legal_moves(piece):
+                        return False
+
+        return True
+
+    def is_stalemate(self, color):
+        if self.is_in_check(color):
             return False
 
         for row in range(8):
