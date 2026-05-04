@@ -95,7 +95,7 @@ class MenuScene:
 
                 elif button.action == "exit":
                     pygame.quit()
-                    exit()
+                    raise SystemExit
 
     def update(self):
         for particle in self.particles:
