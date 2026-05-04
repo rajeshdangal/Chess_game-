@@ -23,9 +23,59 @@ jobs:
     
     - name: Build executable
       run: |
-        pyinstaller --onefile --windowed --add-data "assets;assets" --add-data "game;game" game/main.py
+        pyinstaller --onefile --windowed --add-data "assets;assets" --add-data "game;game" game/main.py --name ChessGame
+    
+    - name: Download Inno Setup
+      run: |
+        Invoke-WebRequest -Uri "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" -OutFile "innosetup.exe"
+        Start-Process -Wait -FilePath .\innosetup.exe -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=C:\innosetup"
+    
+    - name: Create Installer Script
+      run: |
+        @"
+        [Setup]
+        AppName=Chess Game
+        AppVersion=%VERSION%
+        DefaultDirName={pf}\Chess Game
+        DefaultGroupName=Chess Game
+        UninstallDisplayIcon={app}\ChessGame.exe
+        Compression=lzma2
+        SolidCompression=yes
+        OutputDir=.
+        OutputBaseFilename=ChessGame_Setup
+        SetupIconFile=assets\icon.ico
+        
+        [Files]
+        Source: "dist\ChessGame.exe"; DestDir: "{app}"
+        Source: "assets\*"; DestDir: "{app}\assets"; Flags: recursesubdirs
+        
+        [Icons]
+        Name: "{group}\Chess Game"; Filename: "{app}\ChessGame.exe"
+        Name: "{group}\Uninstall Chess Game"; Filename: "{uninstallexe}"
+        Name: "{commondesktop}\Chess Game"; Filename: "{app}\ChessGame.exe"
+        
+        [Run]
+        Filename: "{app}\ChessGame.exe"; Description: "Launch Chess Game"; Flags: postinstall nowait skipifsilent
+        "@ | Out-File -FilePath "ChessGame.iss" -Encoding UTF8
+    
+    - name: Compile Installer
+      run: |
+        & "C:\innosetup\ISCC.exe" ChessGame.iss /DVERSION=$env:GITHUB_REF_NAME
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: dist/main.exe
+        files: ChessGame_Setup.exe
+        body: |
+          ## Chess Game Installer
+          
+          ### Installation:
+          1. Download `ChessGame_Setup.exe`
+          2. Run the installer
+          3. Play from Start Menu or Desktop shortcut
+          
+          ### Features:
+          - Automatic installation
+          - Start menu shortcuts
+          - Desktop icon
+          - Easy uninstall
