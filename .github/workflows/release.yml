@@ -25,16 +25,22 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --add-data "assets;assets" --add-data "game;game" game/main.py --name ChessGame
     
+    - name: Get version
+      id: version
+      run: |
+        echo "VERSION=$(date +'%Y.%m.%d-%H%M%S')" >> $env:GITHUB_OUTPUT
+    
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: ncipollo/release-action@v1
       with:
-        files: dist/ChessGame.exe
-        tag_name: continuous-build-${{ github.run_number }}
-        name: Build ${{ github.run_number }}
+        artifacts: dist/ChessGame.exe
+        tag: v${{ steps.version.outputs.VERSION }}
+        name: Automatic Build ${{ steps.version.outputs.VERSION }}
         body: |
-          ## Auto-built from main branch
+          ## Automatic release from main branch
           - Commit: ${{ github.sha }}
-          - Build #: ${{ github.run_number }}
+          - Build time: ${{ steps.version.outputs.VERSION }}
           - Triggered by: Push to main branch
-        draft: false
-        prerelease: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        allowUpdates: true
+        removeArtifacts: true
