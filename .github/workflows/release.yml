@@ -23,10 +23,9 @@ jobs:
     
     - name: Build executable
       run: |
-        cd chess_game-
         pyinstaller --onefile --windowed --add-data "assets;assets" --add-data "game;game" game/main.py
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: chess_game-/dist/main.exe
+        files: dist/main.exe
