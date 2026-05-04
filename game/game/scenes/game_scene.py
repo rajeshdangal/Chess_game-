@@ -8,9 +8,8 @@ OFFSET_X = 250
 OFFSET_Y = 120
 
 
-
 class GameScene:
-    def __init__(self, game):
+    def __init__(self, game, ai_enabled=True):
         self.game = game
         self.board = Board()
 
@@ -32,7 +31,7 @@ class GameScene:
         self.turn = "white"
         self.move_history = []
 
-        self.ai_enabled = True
+        self.ai_enabled = ai_enabled
         self.ai = ChessAI("black", depth=2)
 
         self.game_over = False
@@ -143,13 +142,16 @@ class GameScene:
             col = (x - OFFSET_X) // TILE_SIZE
             row = (y - OFFSET_Y) // TILE_SIZE
 
-            # Outside board
             if not (0 <= row < 8 and 0 <= col < 8):
                 return
 
             tile = self.board.tiles[row][col]
 
-            if tile.piece and tile.piece.color == self.turn and self.turn == "white":
+            if (
+                tile.piece
+                and tile.piece.color == self.turn
+                and (not self.ai_enabled or self.turn == "white")
+            ):
                 self.selected_piece = tile.piece
                 self.valid_moves = self.board.get_legal_moves(tile.piece)
 
@@ -176,11 +178,11 @@ class GameScene:
                     self.finish_move(piece, old_row, old_col, row, col)
                     self.start_animation(piece, old_row, old_col, row, col)
 
-                    self.turn = "black"
+                    self.turn = "black" if self.turn == "white" else "white"
 
-                    if self.board.is_checkmate("black"):
+                    if self.board.is_checkmate(self.turn):
                         self.game_over = True
-                        self.winner = "White"
+                        self.winner = "White" if self.turn == "black" else "Black"
 
                 self.dragging = False
                 self.dragging_piece = None
@@ -232,20 +234,19 @@ class GameScene:
             small_image = pygame.transform.scale(piece.image, (36, 36))
             screen.blit(small_image, (x, y))
 
-    # =====================================================
-    # DRAW
-    # =====================================================
     def draw(self, screen):
         screen.fill((40, 40, 40))
 
         hidden_piece = self.dragging_piece or self.animation_piece
+        check_color = self.turn if self.board.is_in_check(self.turn) else None
 
         self.board.draw(
             screen,
             self.selected_piece,
             self.valid_moves,
             self.last_move,
-            hidden_piece
+            hidden_piece,
+            check_color
         )
 
         self.draw_captured_pieces(screen)
@@ -271,7 +272,11 @@ class GameScene:
             message = f"{self.winner} Wins!"
             text_surface = self.win_font.render(message, True, (255, 215, 0))
         else:
-            message = f"{self.turn.capitalize()}'s Turn"
+            if check_color:
+                message = f"{self.turn.capitalize()} is in Check!"
+            else:
+                message = f"{self.turn.capitalize()}'s Turn"
+
             text_surface = self.turn_font.render(message, True, (255, 215, 0))
 
         text_rect = text_surface.get_rect(center=(OFFSET_X + 4 * TILE_SIZE, 60))
