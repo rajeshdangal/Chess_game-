@@ -41,8 +41,48 @@ class GameScene:
         self.captured_black = []
 
         self.turn_font = pygame.font.Font(None, 42)
-        self.win_font = pygame.font.Font(None, 80)
+        self.win_font = pygame.font.Font(None, 70)
         self.captured_font = pygame.font.Font(None, 30)
+
+        # Side panel buttons
+        panel_x = OFFSET_X + 8 * TILE_SIZE + 20
+        self.pause_button = pygame.Rect(panel_x, 700, 220, 50)
+        self.restart_button = pygame.Rect(panel_x, 765, 220, 50)
+
+    def restart_game(self):
+        self.board = Board()
+        self.selected_piece = None
+        self.valid_moves = []
+        self.last_move = None
+
+        self.dragging = False
+        self.dragging_piece = None
+        self.drag_pos = (0, 0)
+
+        self.animating = False
+        self.animation_piece = None
+        self.animation_start = (0, 0)
+        self.animation_end = (0, 0)
+        self.animation_progress = 0
+
+        self.turn = "white"
+        self.move_history = []
+
+        self.game_over = False
+        self.winner = None
+
+        self.captured_white = []
+        self.captured_black = []
+
+        print("Game restarted!")
+
+    def pause_game(self):
+        save_game(self.board, self.turn, self.move_history)
+
+        from game.scenes.menu_scene import MenuScene
+        self.game.current_scene = MenuScene(self.game)
+
+        print("Game paused and saved!")
 
     def start_animation(self, piece, old_row, old_col, new_row, new_col):
         self.animating = True
@@ -76,13 +116,20 @@ class GameScene:
             "captured": captured_piece.__class__.__name__ if captured_piece else None
         })
 
+    def check_game_status(self):
+        if self.board.is_checkmate(self.turn):
+            self.game_over = True
+            self.winner = "White" if self.turn == "black" else "Black"
+
+        elif self.board.is_stalemate(self.turn):
+            self.game_over = True
+            self.winner = "Draw"
+
     def make_ai_move(self):
         move = self.ai.choose_move(self.board)
 
         if move is None:
-            if self.board.is_checkmate("black"):
-                self.game_over = True
-                self.winner = "White"
+            self.check_game_status()
             return
 
         piece, row, col = move
@@ -93,20 +140,12 @@ class GameScene:
         self.start_animation(piece, old_row, old_col, row, col)
 
         self.turn = "white"
-
-        if self.board.is_checkmate("white"):
-            self.game_over = True
-            self.winner = "Black"
+        self.check_game_status()
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                save_game(self.board, self.turn, self.move_history)
-
-                from game.scenes.menu_scene import MenuScene
-                self.game.current_scene = MenuScene(self.game)
-
-                print("Game paused and saved!")
+                self.pause_game()
 
             if event.key == pygame.K_s:
                 save_game(self.board, self.turn, self.move_history)
@@ -132,6 +171,18 @@ class GameScene:
                     print("Game loaded!")
                 else:
                     print("No saved game found.")
+
+            if event.key == pygame.K_r:
+                self.restart_game()
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.pause_button.collidepoint(event.pos):
+                self.pause_game()
+                return
+
+            if self.restart_button.collidepoint(event.pos):
+                self.restart_game()
+                return
 
         if self.game_over or self.animating:
             return
@@ -179,10 +230,7 @@ class GameScene:
                     self.start_animation(piece, old_row, old_col, row, col)
 
                     self.turn = "black" if self.turn == "white" else "white"
-
-                    if self.board.is_checkmate(self.turn):
-                        self.game_over = True
-                        self.winner = "White" if self.turn == "black" else "Black"
+                    self.check_game_status()
 
                 self.dragging = False
                 self.dragging_piece = None
@@ -234,6 +282,23 @@ class GameScene:
             small_image = pygame.transform.scale(piece.image, (36, 36))
             screen.blit(small_image, (x, y))
 
+    def draw_side_button(self, screen, rect, text):
+        mouse = pygame.mouse.get_pos()
+        hovered = rect.collidepoint(mouse)
+
+        color = (90, 90, 180) if hovered else (40, 40, 90)
+
+        if hovered:
+            glow_rect = rect.inflate(8, 8)
+            pygame.draw.rect(screen, (255, 215, 0), glow_rect, border_radius=14)
+
+        pygame.draw.rect(screen, color, rect, border_radius=12)
+        pygame.draw.rect(screen, (255, 215, 0), rect, 2, border_radius=12)
+
+        label = self.captured_font.render(text, True, (255, 255, 255))
+        label_rect = label.get_rect(center=rect.center)
+        screen.blit(label, label_rect)
+
     def draw(self, screen):
         screen.fill((40, 40, 40))
 
@@ -250,6 +315,8 @@ class GameScene:
         )
 
         self.draw_captured_pieces(screen)
+        self.draw_side_button(screen, self.pause_button, "Pause")
+        self.draw_side_button(screen, self.restart_button, "Restart")
 
         if self.animating and self.animation_piece:
             sx, sy = self.animation_start
@@ -269,8 +336,13 @@ class GameScene:
             )
 
         if self.game_over:
-            message = f"{self.winner} Wins!"
+            if self.winner == "Draw":
+                message = "Draw by Stalemate"
+            else:
+                message = f"Checkmate! {self.winner} Wins!"
+
             text_surface = self.win_font.render(message, True, (255, 215, 0))
+
         else:
             if check_color:
                 message = f"{self.turn.capitalize()} is in Check!"

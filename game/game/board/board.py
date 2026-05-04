@@ -24,6 +24,7 @@ CHECK_COLOR = (255, 80, 80)
 class Board:
     def __init__(self):
         self.tiles = []
+        self.last_move = None
         self.create_board()
 
     def create_board(self):
@@ -117,11 +118,18 @@ class Board:
         return False
 
     def move_piece(self, piece, row, col):
-        captured_piece = self.tiles[row][col].piece
-
         old_row = piece.row
         old_col = piece.col
 
+        captured_piece = self.tiles[row][col].piece
+
+        # En passant
+        if piece.__class__.__name__ == "Pawn":
+            if col != old_col and self.tiles[row][col].piece is None:
+                captured_piece = self.tiles[old_row][col].piece
+                self.tiles[old_row][col].piece = None
+
+        # Castling
         if piece.__class__.__name__ == "King" and abs(col - old_col) == 2:
             if col == 6:
                 rook = self.tiles[old_row][7].piece
@@ -146,8 +154,15 @@ class Board:
         piece.col = col
         piece.has_moved = True
 
+        # Promotion
         if self.check_promotion(piece):
             self.tiles[row][col].piece = Queen(row, col, piece.color)
+
+        self.last_move = {
+            "piece": piece,
+            "from": (old_row, old_col),
+            "to": (row, col)
+        }
 
         return captured_piece
 
@@ -174,7 +189,6 @@ class Board:
 
                 if piece and piece.color == enemy_color:
                     moves = piece.get_valid_moves(self)
-
                     if (king_row, king_col) in moves:
                         return True
 
@@ -184,6 +198,12 @@ class Board:
         old_row = piece.row
         old_col = piece.col
         captured_piece = self.tiles[new_row][new_col].piece
+        en_passant_piece = None
+
+        if piece.__class__.__name__ == "Pawn":
+            if new_col != old_col and self.tiles[new_row][new_col].piece is None:
+                en_passant_piece = self.tiles[old_row][new_col].piece
+                self.tiles[old_row][new_col].piece = None
 
         self.tiles[old_row][old_col].piece = None
         self.tiles[new_row][new_col].piece = piece
@@ -197,80 +217,36 @@ class Board:
         piece.row = old_row
         piece.col = old_col
 
+        if en_passant_piece:
+            self.tiles[old_row][new_col].piece = en_passant_piece
+
         return safe
 
-    def can_castle_kingside(self, king):
-        if king.__class__.__name__ != "King" or king.has_moved:
-            return False
-
-        row = king.row
-        rook = self.tiles[row][7].piece
-
-        if not rook or rook.__class__.__name__ != "Rook":
-            return False
-
-        if rook.color != king.color or rook.has_moved:
-            return False
-
-        if not self.is_empty(row, 5) or not self.is_empty(row, 6):
-            return False
-
-        if self.is_in_check(king.color):
-            return False
-
-        if not self.is_move_safe(king, row, 5):
-            return False
-
-        if not self.is_move_safe(king, row, 6):
-            return False
-
-        return True
-
-    def can_castle_queenside(self, king):
-        if king.__class__.__name__ != "King" or king.has_moved:
-            return False
-
-        row = king.row
-        rook = self.tiles[row][0].piece
-
-        if not rook or rook.__class__.__name__ != "Rook":
-            return False
-
-        if rook.color != king.color or rook.has_moved:
-            return False
-
-        if not self.is_empty(row, 1) or not self.is_empty(row, 2) or not self.is_empty(row, 3):
-            return False
-
-        if self.is_in_check(king.color):
-            return False
-
-        if not self.is_move_safe(king, row, 3):
-            return False
-
-        if not self.is_move_safe(king, row, 2):
-            return False
-
-        return True
-
     def get_legal_moves(self, piece):
-        legal_moves = []
+        moves = []
 
         for row, col in piece.get_valid_moves(self):
             if self.is_move_safe(piece, row, col):
-                legal_moves.append((row, col))
+                moves.append((row, col))
 
-        if piece.__class__.__name__ == "King":
-            if self.can_castle_kingside(piece):
-                legal_moves.append((piece.row, 6))
-
-            if self.can_castle_queenside(piece):
-                legal_moves.append((piece.row, 2))
-
-        return legal_moves
+        return moves
 
     def is_checkmate(self, color):
         if not self.is_in_check(color):
+            return False
+
+        for row in range(8):
+            for col in range(8):
+                piece = self.tiles[row][col].piece
+
+                if piece and piece.color == color:
+                    if self.get_legal_moves(piece):
+                        return False
+
+        return True
+
+    def is_stalemate(self, color):
+        if self.is_in_check(color):
             return False
 
         for row in range(8):
